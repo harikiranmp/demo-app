@@ -1,0 +1,52 @@
+pipeline {
+    agent any
+
+    environment {
+        AWS_CREDENTIALS = credentials('aws-creds')
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/dineshpardhu-210/sample-app.git'
+            }
+        }
+
+        stage('Terraform Init') {
+            steps {
+                sh '''
+                  terraform init -input=false -reconfigure \
+                    -backend-config="region=$AWS_REGION"
+                '''
+            }
+        }
+
+        stage('Terraform Plan') {
+            steps {
+                sh '''
+                  terraform plan -input=false -out=tfplan \
+                    -var="aws_region=$AWS_REGION"
+                '''
+            }
+        }
+
+        stage('Terraform Apply') {
+            when {
+                expression { return params.APPLY == true }
+            }
+            steps {
+                sh 'terraform apply -auto-approve tfplan'
+            }
+        }
+    }
+
+    parameters {
+        booleanParam(name: 'APPLY', defaultValue: false, description: 'Apply changes automatically?')
+    }
+
+    post {
+        always {
+            sh 'terraform output || true'
+        }
+    }
+}
