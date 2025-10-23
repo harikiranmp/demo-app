@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: demo-app
-        image: <account>.dkr.ecr.us-east-1.amazonaws.com/demo-app:latest
+        image: harikiranmp/demo-app:latest
         ports:
         - containerPort: 3000
         readinessProbe:
