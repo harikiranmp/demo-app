@@ -13,6 +13,19 @@ pipeline {
             }
         }
 
+        stage('Debug Git Remote') {
+            steps {
+                sh '''
+                  echo "🔍 Checking git remote origin URL:"
+                  git remote -v
+                  echo "🔍 Current branch:"
+                  git branch
+                  echo "🔍 Last 3 commits:"
+                  git log -3 --oneline
+        '''
+            }
+        }
+
         stage('Terraform Init') {
             steps {
                 sh '''
