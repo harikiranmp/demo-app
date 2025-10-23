@@ -103,7 +103,7 @@ module "eks" {
   node_instance_types = var.eks_node_instance_types
   node_desired_size   = var.eks_node_desired
   tags                = var.tags
-  jenkins_role_name   = module.iam.iam_role_name
+  jenkins_role_name   = module.iam.jenkins_role_name
 }
 
 #############################################
