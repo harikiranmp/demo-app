@@ -3,6 +3,11 @@ variable "cluster_name" {
   type        = string
 }
 
+variable "jenkins_role_name" {
+  description = "IAM role name for Jenkins EC2"
+  type        = string
+}
+
 variable "k8s_version" {
   description = "Kubernetes version for EKS control plane"
   type        = string
