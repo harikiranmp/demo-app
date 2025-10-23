@@ -8,7 +8,7 @@ azs           = ["us-east-1a", "us-east-1b"]
 jenkins_instance_type = "t3.medium"
 eks_node_instance_types = ["t3.small"]
 eks_node_desired = 2
-key_name = "my-key"
+#key_name = "my-key"
 tags = {
   Owner = "Hari"
 }
