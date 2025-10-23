@@ -197,11 +197,6 @@ resource "aws_iam_role_policy_attachment" "jenkins_deployer_attach" {
 # Attach EKS + ECR access policies to Jenkins EC2 role
 # =========================================================
 
-# Data source to fetch existing Jenkins EC2 role
-data "aws_iam_role" "jenkins_instance_role" {
-  name = var.jenkins_role_name
-}
-
 # Attach required AWS managed policies to the Jenkins role
 resource "aws_iam_role_policy_attachment" "jenkins_eks_access" {
   for_each = toset([
@@ -212,6 +207,6 @@ resource "aws_iam_role_policy_attachment" "jenkins_eks_access" {
     "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
   ])
 
-  role       = data.aws_iam_role.jenkins_instance_role.name
+  role       = var.jenkins_role_name
   policy_arn = each.value
 }
