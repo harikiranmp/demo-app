@@ -199,7 +199,7 @@ resource "aws_iam_role_policy_attachment" "jenkins_deployer_attach" {
 
 # Data source to fetch existing Jenkins EC2 role
 data "aws_iam_role" "jenkins_instance_role" {
-  name = var.jenkins_role_name
+  name = "${var.cluster_name}-role"
 }
 
 # Attach required AWS managed policies to the Jenkins role
