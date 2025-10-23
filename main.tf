@@ -132,3 +132,94 @@ output "eks_cluster_name" {
 output "eks_oidc_provider" {
   value = module.eks.oidc_provider_arn
 }
+
+#############################################
+# Public ALB for Jenkins (accessible via browser)
+#############################################
+
+# Security group for ALB
+resource "aws_security_group" "jenkins_alb_sg" {
+  name        = "${var.name}-jenkins-alb-sg"
+  description = "Security group for Jenkins ALB"
+  vpc_id      = module.vpc.vpc_id
+
+  ingress {
+    description = "Allow HTTP from anywhere"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    description = "Allow all outbound"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = merge(var.tags, { Name = "${var.name}-jenkins-alb-sg" })
+}
+
+# Application Load Balancer
+resource "aws_lb" "jenkins_alb" {
+  name               = "${var.name}-jenkins-alb"
+  internal           = false
+  load_balancer_type = "application"
+  security_groups    = [aws_security_group.jenkins_alb_sg.id]
+  subnets            = module.vpc.public_subnet_ids
+
+  enable_deletion_protection = false
+
+  tags = merge(var.tags, { Name = "${var.name}-jenkins-alb" })
+}
+
+# Target Group for Jenkins
+resource "aws_lb_target_group" "jenkins_tg" {
+  name        = "${var.name}-jenkins-tg"
+  port        = 8080
+  protocol    = "HTTP"
+  target_type = "instance"
+  vpc_id      = module.vpc.vpc_id
+
+  health_check {
+    enabled             = true
+    path                = "/login"
+    port                = "8080"
+    protocol            = "HTTP"
+    matcher             = "200-399"
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
+    timeout             = 5
+    interval            = 30
+  }
+
+  tags = merge(var.tags, { Name = "${var.name}-jenkins-tg" })
+}
+
+# Attach Jenkins instance to target group
+resource "aws_lb_target_group_attachment" "jenkins_tg_attach" {
+  target_group_arn = aws_lb_target_group.jenkins_tg.arn
+  target_id        = module.jenkins.jenkins_instance_id
+  port             = 8080
+}
+
+# ALB Listener on port 80 (HTTP)
+resource "aws_lb_listener" "jenkins_listener" {
+  load_balancer_arn = aws_lb.jenkins_alb.arn
+  port              = "80"
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.jenkins_tg.arn
+  }
+}
+
+# Output ALB DNS Name
+output "jenkins_alb_dns_name" {
+  description = "Public DNS of Jenkins ALB"
+  value       = aws_lb.jenkins_alb.dns_name
+}
+
