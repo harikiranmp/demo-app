@@ -47,10 +47,6 @@ pipeline {
         }
     }
 
-    parameters {
-        booleanParam(name: 'APPLY', defaultValue: false, description: 'Apply changes automatically?')
-    }
-
     post {
         always {
             sh 'terraform output || true'
