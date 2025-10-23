@@ -1,5 +1,5 @@
 #############################################
-# VPC Module - main.tf
+# VPC Module - main.tf (NAT Instance Ready)
 #############################################
 
 # -----------------------------
@@ -66,7 +66,7 @@ resource "aws_route_table_association" "public_assoc" {
 }
 
 # -----------------------------
-# Private Route Tables (for NAT Gateway later)
+# Private Route Tables (for NAT Instance routing)
 # -----------------------------
 resource "aws_route_table" "private" {
   for_each = aws_subnet.private
@@ -79,4 +79,30 @@ resource "aws_route_table_association" "private_assoc" {
   for_each       = aws_subnet.private
   subnet_id      = each.value.id
   route_table_id = aws_route_table.private[each.key].id
+}
+
+# -----------------------------
+# Route from private route tables via NAT Instance
+# -----------------------------
+# This route will be created in root module (not here),
+# but we output the private route table IDs for reference.
+# -----------------------------
+
+# -----------------------------
+# Outputs
+# -----------------------------
+output "vpc_id" {
+  value = aws_vpc.this.id
+}
+
+output "public_subnet_ids" {
+  value = [for s in aws_subnet.public : s.id]
+}
+
+output "private_subnet_ids" {
+  value = [for s in aws_subnet.private : s.id]
+}
+
+output "private_route_table_ids" {
+  value = [for rt in aws_route_table.private : rt.id]
 }
