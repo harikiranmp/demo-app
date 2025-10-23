@@ -8,6 +8,12 @@ pipeline {
             }
         }
 
+        stage('Cleanup Terraform Cache') {
+            steps {
+                sh 'rm -rf .terraform .terraform.lock.hcl || true'
+            }
+        }
+
         stage('Terraform Init') {
             steps {
                 sh '''
