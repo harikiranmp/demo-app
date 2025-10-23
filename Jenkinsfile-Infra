@@ -2,53 +2,48 @@ pipeline {
     agent any
 
     parameters {
-        booleanParam(name: 'APPLY', defaultValue: false, description: 'Apply changes automatically?')
+        booleanParam(name: 'APPLY', defaultValue: false, description: 'Apply infrastructure?')
+        booleanParam(name: 'DESTROY', defaultValue: false, description: 'Destroy infrastructure?')
     }
 
     stages {
-        stage('Checkout') {
+        stage('Cleanup') {
             steps {
-                cleanWs()
-                git branch: 'main', url: 'https://github.com/harikiranmp/demo-app.git'
+                sh 'rm -rf .terraform .terraform.lock.hcl || true'
             }
         }
 
-        stage('Debug Git Remote') {
+        stage('Checkout') {
             steps {
-                sh '''
-                  echo "🔍 Checking git remote origin URL:"
-                  git remote -v
-                  echo "🔍 Current branch:"
-                  git branch
-                  echo "🔍 Last 3 commits:"
-                  git log -3 --oneline
-        '''
+                git branch: 'main', url: 'https://github.com/harikiranmp/demo-app.git'
             }
         }
 
         stage('Terraform Init') {
             steps {
-                sh '''
-                  terraform init -input=false -reconfigure
-                '''
+                sh 'terraform init -input=false -reconfigure'
             }
         }
 
         stage('Terraform Plan') {
+            when { expression { return params.APPLY == true } }
             steps {
-                sh '''
-                  terraform plan -input=false -out=tfplan \
-                    -var="aws_region=us-east-1"
-                '''
+                sh 'terraform plan -out=tfplan -input=false'
             }
         }
 
         stage('Terraform Apply') {
-            when {
-                expression { return params.APPLY == true }
-            }
+            when { expression { return params.APPLY == true } }
             steps {
                 sh 'terraform apply -auto-approve tfplan'
+            }
+        }
+
+        stage('Terraform Destroy') {
+            when { expression { return params.DESTROY == true } }
+            steps {
+                echo "💣 Destroying all Terraform-managed infrastructure..."
+                sh 'terraform destroy -auto-approve -input=false'
             }
         }
     }
