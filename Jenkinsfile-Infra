@@ -9,7 +9,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 cleanWs()
-                git branch: 'main', url: 'https://github.com/dineshpardhu-210/sample-app.git'
+                git branch: 'main', url: 'https://github.com/harikiranmp/demo-app.git'
             }
         }
 
