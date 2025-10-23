@@ -1,16 +1,22 @@
 pipeline {
     agent any
 
+    parameters {
+        booleanParam(name: 'APPLY', defaultValue: false, description: 'Apply changes automatically?')
+    }
+
     stages {
+        stage('Cleanup') {
+            steps {
+                sh '''
+                  echo "🧹 Cleaning previous Terraform state cache..."
+                  rm -rf .terraform .terraform.lock.hcl || true
+                '''
+            }
+        }
         stage('Checkout') {
             steps {
                 git branch: 'main', url: 'https://github.com/dineshpardhu-210/sample-app.git'
-            }
-        }
-
-        stage('Cleanup Terraform Cache') {
-            steps {
-                sh 'rm -rf .terraform .terraform.lock.hcl || true'
             }
         }
 
