@@ -50,7 +50,7 @@ resource "aws_instance" "nat_instance" {
   subnet_id                   = module.vpc.public_subnet_ids[0]
   associate_public_ip_address = true
   source_dest_check           = false
-  key_name                    = var.key_name
+  #key_name                    = var.key_name
   vpc_security_group_ids      = [aws_security_group.nat_sg.id]
 
   tags = merge(var.tags, { Name = "${var.name}-nat-instance" })
