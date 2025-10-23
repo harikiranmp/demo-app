@@ -2,8 +2,9 @@ output "vpc_id" {
   value = module.vpc.vpc_id
 }
 
-output "nat_public_ip" {
-  value = module.nat_gateway.nat_public_ip
+output "nat_instance_public_ip" {
+  description = "Public IP of the NAT instance"
+  value       = aws_instance.nat_instance.public_ip
 }
 
 output "jenkins_private_ip" {
