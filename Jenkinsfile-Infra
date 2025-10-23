@@ -11,8 +11,7 @@ pipeline {
         stage('Terraform Init') {
             steps {
                 sh '''
-                  terraform init -input=false -reconfigure \
-                    -backend-config="region=$AWS_REGION"
+                  terraform init -input=false -reconfigure
                 '''
             }
         }
@@ -21,7 +20,7 @@ pipeline {
             steps {
                 sh '''
                   terraform plan -input=false -out=tfplan \
-                    -var="aws_region=$AWS_REGION"
+                    -var="aws_region=$us-east-1"
                 '''
             }
         }
