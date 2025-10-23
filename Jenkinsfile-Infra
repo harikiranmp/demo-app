@@ -6,16 +6,9 @@ pipeline {
     }
 
     stages {
-        stage('Cleanup') {
-            steps {
-                sh '''
-                  echo "🧹 Cleaning previous Terraform state cache..."
-                  rm -rf .terraform .terraform.lock.hcl || true
-                '''
-            }
-        }
         stage('Checkout') {
             steps {
+                cleanWs()
                 git branch: 'main', url: 'https://github.com/dineshpardhu-210/sample-app.git'
             }
         }
