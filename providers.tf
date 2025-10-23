@@ -9,10 +9,6 @@ terraform {
     use_lockfile   = true
   }
 
-provider "aws" {
-  region = "us-east-1"
-}
-
   required_providers {
     aws = {
       source  = "hashicorp/aws"
@@ -24,6 +20,9 @@ provider "aws" {
       version = "~> 2.22"
     }
   }
+}
+provider "aws" {
+  region = "us-east-1"
 }
 
 data "aws_eks_cluster_auth" "cluster" {
