@@ -64,6 +64,12 @@ variable "ecr_repo_name" {
   default     = "sample-app-repo"
 }
 
+variable "key_name" {
+  description = "Name of the EC2 key pair used for SSH access"
+  type        = string
+  default     = "my-key" # Change to your actual AWS key pair
+}
+
 variable "tags" {
   description = "Resource tags"
   type        = map(string)
