@@ -9,6 +9,10 @@ terraform {
     use_lockfile   = true
   }
 
+provider "aws" {
+  region = var.aws_region
+}
+
   required_providers {
     aws = {
       source  = "hashicorp/aws"
