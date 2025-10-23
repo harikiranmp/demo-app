@@ -22,11 +22,6 @@ terraform {
   }
 }
 
-provider "aws" {
-  region  = var.aws_region
-  profile = "default"
-}
-
 data "aws_eks_cluster_auth" "cluster" {
   name = module.eks.cluster_name
 }
