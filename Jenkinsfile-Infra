@@ -32,7 +32,7 @@ pipeline {
             steps {
                 sh '''
                   terraform plan -input=false -out=tfplan \
-                    -var="aws_region=$us-east-1"
+                    -var="aws_region=us-east-1"
                 '''
             }
         }
